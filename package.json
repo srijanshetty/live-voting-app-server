@@ -1,0 +1,11 @@
+{
+  "name": "voting-app",
+  "main": "app.js",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "cookie-parser": "^1.4.1",
+    "express": "^4.13.4",
+    "morgan": "^1.7.0",
+    "sqlite3": "^3.1.2"
+  }
+}
