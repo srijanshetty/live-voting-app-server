@@ -81,12 +81,16 @@ Router.route( '/questions/:id' )
 
           var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM questions WHERE qid=?', [ question ], function( err, row ) {
-              var results = {};
               if( row ) {
-                  db.each( 'SELECT * FROM responses WHERE qid=?', [ question ], function( err, row ) {
-                      results[ row.options ] = ( results[ row.options ] )? results[ row.options ]++ : 1;
+                  db.all( 'SELECT * FROM responses WHERE qid=?', [ question ], function( err, rows ) {
+                      var results = {};
+                      rows.forEach( function( row ) {
+                          results[ row.option ] = ( results[ row.option ] )? ++results[ row.option ] : 1;
+                      } );
+
+                      console.log( '[ RESPONSE ]' + JSON.stringify( rows ) ) ;
+                      res.send( { "question": row.question, "options": JSON.parse( row.options ), "stats": results });
                   } );
-                  res.send( { "question": row.question, "options": JSON.parse( row.options ), "results": results });
               }
           } );
           db.close();
@@ -94,8 +98,9 @@ Router.route( '/questions/:id' )
 
 Router.route( '/vote/:id' )
       .post( function( req, res ) {
-          // Check if USER_KEY is allowed to vote
+          // Check if ACCESS-KEY is allowed to vote
 
+          // Check for duplicate votes using PRIMARY KEY
           // Add vote to id with POST param option
           var qid = req.body.qid;
           var user = req.body.email;
@@ -104,13 +109,12 @@ Router.route( '/vote/:id' )
           var db = new sqlite.Database( database );
           db.run( 'INSERT INTO responses VALUES( ?, ?, ? )', [ qid, user, option ], function(err) {
               if( err === null ) {
-                  res.send();
+                  res.send( {} );
               } else {
                   res.status(404).send();
               }
           });
           db.close();
-
       } );
 
 // Start the server
