@@ -8,6 +8,8 @@ var sqlite = require( 'sqlite3' ).verbose();
 var uuid = require( 'node-uuid' );
 var shortid = require( 'shortid' );
 
+var database = 'database.dat';
+
 // Standard plug and play modules
 app.use( bodyParser.urlencoded( {extended: true } ) );
 app.use( bodyParser.json() );
@@ -24,7 +26,7 @@ app.use( '/', Router );
 Router.route( '/users' )
       .post( function( req, res ) {
           // Create a ACCESS-KEY or just return an existing ACCESS-KEY
-          var db = new sqlite.Database( 'database' );
+          var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM users WHERE user=?', [ req.body.email ], function( err, row ) {
               var key = null;
 
@@ -44,7 +46,7 @@ Router.route( '/users' )
 Router.route( '/questions' )
       .get( function( req, res ) {
           // Return a list of questions created by the ACCESS-KEY
-          var db = new sqlite.Database( 'database' );
+          var db = new sqlite.Database( database );
           db.all( 'SELECT qid, question FROM questions WHERE creator=?', [ req.headers[ 'x-access-key'] ], function( err, rows) {
               console.log( '[ RESPONSE ] Questions created by ' + req.headers[ 'x-access-key' ] );
               console.log( rows );
@@ -59,7 +61,7 @@ Router.route( '/questions' )
           var question = req.body.question;
           var options = JSON.stringify( req.body.options );
 
-          var db = new sqlite.Database( 'database' );
+          var db = new sqlite.Database( database );
           db.run( 'INSERT INTO questions VALUES( ?, ?, ?, ? )', [ key, creator, question, options ], function( err ) {
               console.log( '[ DB ] (' + key + ',' + creator + ',' + question + ',' + options + ')' );
 
@@ -77,7 +79,7 @@ Router.route( '/questions/:id' )
           var question = req.params.id;
           var creator = req.headers[ 'x-access-key' ];
 
-          var db = new sqlite.Database( 'database' );
+          var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM questions WHERE qid=?', [ question ], function( err, row ) {
               // TODO: Return the stats of the 'id'
               if( row ) {
@@ -96,7 +98,7 @@ Router.route( '/vote/:id' )
           var user = req.body.email;
           var option = req.body.option;
 
-          var db = new sqlite.Database( 'database' );
+          var db = new sqlite.Database( database );
           db.run( 'INSERT INTO responses VALUES( ?, ?, ? )', [ qid, user, option ], function(err) {
               if( err === null ) {
                   res.send();
