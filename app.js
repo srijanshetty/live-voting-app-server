@@ -81,9 +81,12 @@ Router.route( '/questions/:id' )
 
           var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM questions WHERE qid=?', [ question ], function( err, row ) {
-              // TODO: Return the stats of the 'id'
+              var results = {};
               if( row ) {
-                  res.send( { "stats": "Later", "question": row.question, "options": JSON.parse( row.options ) });
+                  db.each( 'SELECT * FROM responses WHERE qid=?', [ question ], function( err, row ) {
+                      results[ row.options ] = ( results[ row.options ] )? results[ row.options ]++ : 1;
+                  } );
+                  res.send( { "question": row.question, "options": JSON.parse( row.options ), "results": results });
               }
           } );
           db.close();
