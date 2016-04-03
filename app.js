@@ -182,13 +182,20 @@ Router.route( '/vote/:id' )
           var option = req.body.option;
 
           var db = new sqlite.Database( database );
-          db.run( 'INSERT INTO responses VALUES( ?, ?, ? )', [ qid, user, option ], function(err) {
-              if( err === null ) {
-                  res.send( {} );
-              } else {
-                  res.status(404).send();
+          db.get( 'SELECT * FROM questions WHERE qid=?', [ qid ], function( err, row ) {
+              if( err ) {
+                  res.status( 404 ).send();
               }
-          });
+
+              // Only the creator should be allowed to upate
+              if( row.inactive === true ) {
+                  res.status( 404 ).send();
+              }
+
+              if( row ) {
+                  db.run( 'UPDATE questions SET inactive=TRUE WHERE qid=?', [ qid ] );
+              }
+          } );
           db.close();
       } );
 
