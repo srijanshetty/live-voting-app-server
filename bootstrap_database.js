@@ -25,7 +25,7 @@ var db = new sqlite.Database( 'database.dat' );
 
 db.serialize( function() {
     db.run( 'CREATE TABLE users ( user TEXT, key TEXT )')
-    db.run( 'CREATE TABLE questions ( qid TEXT NOT NULL, creator TEXT, question TEXT, options TEXT )');
+    db.run( 'CREATE TABLE questions ( qid TEXT NOT NULL, creator TEXT, question TEXT, options TEXT, next_qid TEXT )');
     db.run( 'CREATE TABLE validation ( qid TEXT, user TEXT )');
     db.run( 'CREATE TABLE responses ( qid TEXT, user TEXT, option TEXT, PRIMARY KEY( qid, user ) )');
 });

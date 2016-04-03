@@ -99,7 +99,13 @@ Router.route( '/questions/:id' )
                       } );
 
                       console.log( '[ RESPONSE ]' + JSON.stringify( rows ) ) ;
-                      res.send( { "qid": qid, "question": row.question, "options": JSON.parse( row.options ), "stats": results });
+                      res.send( {
+                          "qid": qid,
+                          "question": row.question,
+                          "options": JSON.parse( row.options ),
+                          "stats": results,
+                          "next_quid": row.next_qid
+                      });
                   } );
               }
           } );
