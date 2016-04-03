@@ -39,7 +39,7 @@ Router.route( '/users' )
                   db.run( 'INSERT INTO users VALUES ( ?, ? )', [ req.body.email, key ] );
               }
 
-              console.log( '[ RESPONSE] sending key: ' + key + ' for user: ' + req.body.email );
+              console.log( '[ RESPONSE ] sending key: ' + key + ' for user: ' + req.body.email );
               res.send( { "key": key } );
           } );
           db.close();
@@ -69,7 +69,7 @@ Router.route( '/questions' )
 
           var db = new sqlite.Database( database );
           db.run( 'INSERT INTO questions VALUES( ?, ?, ?, ? )', [ qid, creator, question, options ], function( err ) {
-              console.log( '[ DB ] (' + qid + ',' + creator + ',' + question + ',' + options + ')' );
+              console.log( '[ INSERT ] [ questions ] (' + qid + ',' + creator + ',' + question + ',' + options + ')' );
 
               if( err === null ) {
                   res.send( { "key": qid } );
@@ -134,14 +134,17 @@ Router.route( '/questions/:id' )
                   db.serialize( function( ) {
                       if ( !!next_quid ) {
                           db.run( 'UPDATE questions SET next_quid=? WHERE qid=?', [ next_quid, qid ] );
+                          console.log( '[ UPDATE ] [ questions - next_quid ]' + next_quid ) ;
                       }
 
                       if ( !!question ) {
                           db.run( 'UPDATE questions SET question=? WHERE qid=?', [ question, qid ] );
+                          console.log( '[ UPDATE ] [ questions - question ]' + question ) ;
                       }
 
                       if ( !!options ) {
                           db.run( 'UPDATE questions SET options=? WHERE qid=?', [ options, qid ] );
+                          console.log( '[ UPDATE ] [ questions - options ]' + options ) ;
                       }
                   });
               }
@@ -165,6 +168,7 @@ Router.route( '/questions/:id' )
 
               if( row ) {
                   db.run( 'UPDATE questions SET inactive=TRUE WHERE qid=?', [ qid ] );
+                  console.log( '[ ARCHIVE ] [ questions ]' + qid ) ;
               }
           } );
           db.close();
