@@ -112,7 +112,7 @@ Router.route( '/questions/:id' )
           } );
           db.close();
       } )
-      .post( function( req, res ) {
+      .put( function( req, res ) {
           var qid = req.params.id;
           var creator = req.headers[ 'x-access-key' ];
 
@@ -122,6 +122,8 @@ Router.route( '/questions/:id' )
 
           var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM questions WHERE qid=?', [ qid ], function( err, row ) {
+              console.log( '[ QUERY ]', row );
+
               if( err ) {
                   console.log( '[ ERROR ]', err );
                   res.status( 404 ).send();
@@ -134,38 +136,40 @@ Router.route( '/questions/:id' )
               }
 
               if( row ) {
-                      if ( !!next_quid ) {
-                          db.run( 'UPDATE questions SET next_quid=? WHERE qid=?', [ next_quid, qid ], function( err ) {
-                              console.log( '[ UPDATE ] [ questions - next_quid ]' + next_quid ) ;
+                  if ( !!next_quid ) {
+                      db.run( 'UPDATE questions SET next_quid=? WHERE qid=?', [ next_quid, qid ], function( err ) {
+                          console.log( '[ UPDATE ] [ questions - next_quid ]' + next_quid ) ;
 
-                              if( err !== null ) {
-                                  console.log( '[ ERROR ]', err );
-                                  res.status( 404 ).send();
-                              }
-                          } );
-                      }
+                          if( err !== null ) {
+                              console.log( '[ ERROR ]', err );
+                              res.status( 404 ).send();
+                          }
+                      } );
+                  }
 
-                      if ( !!question ) {
-                          db.run( 'UPDATE questions SET question=? WHERE qid=?', [ question, qid ], function( err ) {
-                              console.log( '[ UPDATE ] [ questions - question ]' + question ) ;
+                  if ( !!question ) {
+                      db.run( 'UPDATE questions SET question=? WHERE qid=?', [ question, qid ], function( err ) {
+                          console.log( '[ UPDATE ] [ questions - question ]' + question ) ;
 
-                              if( err !== null ) {
-                                  console.log( '[ ERROR ]', err );
-                                  res.status( 404 ).send();
-                              }
-                          } );
-                      }
+                          if( err !== null ) {
+                              console.log( '[ ERROR ]', err );
+                              res.status( 404 ).send();
+                          }
+                      } );
+                  }
 
-                      if ( !!options ) {
-                          db.run( 'UPDATE questions SET options=? WHERE qid=?', [ options, qid ], function( err ) {
-                              console.log( '[ UPDATE ] [ questions - options ]' + options ) ;
+                  if ( !!options ) {
+                      db.run( 'UPDATE questions SET options=? WHERE qid=?', [ options, qid ], function( err ) {
+                          console.log( '[ UPDATE ] [ questions - options ]' + options ) ;
 
-                              if( err !== null ) {
-                                  console.log( '[ ERROR ]', err );
-                                  res.status( 404 ).send();
-                              }
-                          } );
-                      }
+                          if( err !== null ) {
+                              console.log( '[ ERROR ]', err );
+                              res.status( 404 ).send();
+                          }
+                      } );
+                  }
+
+                  res.send();
               }
           } );
           db.close();
