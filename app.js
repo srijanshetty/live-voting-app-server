@@ -21,13 +21,15 @@ app.use( cors() );
 var Router = express.Router();
 app.use( '/', Router );
 
-// TODO: Hndle errors
-
 Router.route( '/users' )
       .post( function( req, res ) {
           // Create a ACCESS-KEY or just return an existing ACCESS-KEY
           var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM users WHERE user=?', [ req.body.email ], function( err, row ) {
+              if( err ) {
+                  res.status( 404 ).send();
+              }
+
               var key = null;
 
               if ( row ) {
@@ -48,6 +50,10 @@ Router.route( '/questions' )
           // Return a list of questions created by the ACCESS-KEY
           var db = new sqlite.Database( database );
           db.all( 'SELECT qid, question FROM questions WHERE creator=?', [ req.headers[ 'x-access-key'] ], function( err, rows) {
+              if( err ) {
+                  res.status( 404 ).send();
+              }
+
               console.log( '[ RESPONSE ] Questions created by ' + req.headers[ 'x-access-key' ] );
               console.log( rows );
               res.send( rows );
