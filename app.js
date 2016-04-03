@@ -68,7 +68,7 @@ Router.route( '/questions' )
           var options = JSON.stringify( req.body.options );
 
           var db = new sqlite.Database( database );
-          db.run( 'INSERT INTO questions VALUES( ?, ?, ?, ? )', [ qid, creator, question, options ], function( err ) {
+          db.run( 'INSERT INTO questions VALUES( ?, ?, ?, ?, NULL, 0 )', [ qid, creator, question, options ], function( err ) {
               console.log( '[ INSERT ] [ questions ] (' + qid + ',' + creator + ',' + question + ',' + options + ')' );
 
               if( err === null ) {
@@ -134,7 +134,6 @@ Router.route( '/questions/:id' )
               }
 
               if( row ) {
-                  db.serialize( function( ) {
                       if ( !!next_quid ) {
                           db.run( 'UPDATE questions SET next_quid=? WHERE qid=?', [ next_quid, qid ], function( err ) {
                               console.log( '[ UPDATE ] [ questions - next_quid ]' + next_quid ) ;
@@ -215,11 +214,12 @@ Router.route( '/vote/:id' )
           var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM questions WHERE qid=?', [ qid ], function( err, row ) {
               if( err ) {
+                  console.log( '[ ERROR ]', err );
                   res.status( 404 ).send();
               }
 
               // Only the creator should be allowed to upate
-              if( row.inactive === true ) {
+              if( row.inactive === 1 ) {
                   res.status( 404 ).send();
               }
 
