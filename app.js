@@ -137,11 +137,11 @@ Router.route( '/questions/:id' )
                       }
 
                       if ( !!question ) {
-                          db.run( 'UPDATE questions SET question=? WHERE qid=?', [ next_quid, qid ] );
+                          db.run( 'UPDATE questions SET question=? WHERE qid=?', [ question, qid ] );
                       }
 
                       if ( !!options ) {
-                          db.run( 'UPDATE questions SET options=? WHERE qid=?', [ next_quid, qid ] );
+                          db.run( 'UPDATE questions SET options=? WHERE qid=?', [ options, qid ] );
                       }
                   });
               }
