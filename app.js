@@ -110,6 +110,43 @@ Router.route( '/questions/:id' )
               }
           } );
           db.close();
+      } )
+      .post( function( req, res ) {
+          var qid = req.params.id;
+          var creator = req.headers[ 'x-access-key' ];
+
+          var next_quid = req.body.next_quid;
+          var question = req.body.question;
+          var options = req.body.options;
+
+          var db = new sqlite.Database( database );
+          db.get( 'SELECT * FROM questions WHERE qid=?', [ qid ], function( err, row ) {
+              if( err ) {
+                  res.status( 404 ).send();
+              }
+
+              // Only the creator should be allowed to upate
+              if( row.creator !== creator ) {
+                  res.status( 404 ).send();
+              }
+
+              if( row ) {
+                  db.serialize( function( ) {
+                      if ( !!next_quid ) {
+                          db.run( 'UPDATE questions SET next_quid=? WHERE qid=?', [ next_quid, qid ] );
+                      }
+
+                      if ( !!question ) {
+                          db.run( 'UPDATE questions SET question=? WHERE qid=?', [ next_quid, qid ] );
+                      }
+
+                      if ( !!options ) {
+                          db.run( 'UPDATE questions SET options=? WHERE qid=?', [ next_quid, qid ] );
+                      }
+                  });
+              }
+          } );
+          db.close();
       } );
 
 Router.route( '/vote/:id' )
