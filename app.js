@@ -74,6 +74,7 @@ Router.route( '/questions' )
               if( err === null ) {
                   res.send( { "key": qid } );
               } else {
+                  console.log( '[ ERROR ]', err );
                   res.status( 404 ).send();
               }
           } );
@@ -133,18 +134,36 @@ Router.route( '/questions/:id' )
               if( row ) {
                   db.serialize( function( ) {
                       if ( !!next_quid ) {
-                          db.run( 'UPDATE questions SET next_quid=? WHERE qid=?', [ next_quid, qid ] );
-                          console.log( '[ UPDATE ] [ questions - next_quid ]' + next_quid ) ;
+                          db.run( 'UPDATE questions SET next_quid=? WHERE qid=?', [ next_quid, qid ], function( err ) {
+                              console.log( '[ UPDATE ] [ questions - next_quid ]' + next_quid ) ;
+
+                              if( err !== null ) {
+                                  console.log( '[ ERROR ]', err );
+                                  res.status( 404 ).send();
+                              }
+                          } );
                       }
 
                       if ( !!question ) {
-                          db.run( 'UPDATE questions SET question=? WHERE qid=?', [ question, qid ] );
-                          console.log( '[ UPDATE ] [ questions - question ]' + question ) ;
+                          db.run( 'UPDATE questions SET question=? WHERE qid=?', [ question, qid ], function( err ) {
+                              console.log( '[ UPDATE ] [ questions - question ]' + question ) ;
+
+                              if( err !== null ) {
+                                  console.log( '[ ERROR ]', err );
+                                  res.status( 404 ).send();
+                              }
+                          } );
                       }
 
                       if ( !!options ) {
-                          db.run( 'UPDATE questions SET options=? WHERE qid=?', [ options, qid ] );
-                          console.log( '[ UPDATE ] [ questions - options ]' + options ) ;
+                          db.run( 'UPDATE questions SET options=? WHERE qid=?', [ options, qid ], function( err ) {
+                              console.log( '[ UPDATE ] [ questions - options ]' + options ) ;
+
+                              if( err !== null ) {
+                                  console.log( '[ ERROR ]', err );
+                                  res.status( 404 ).send();
+                              }
+                          } );
                       }
                   });
               }
@@ -167,8 +186,14 @@ Router.route( '/questions/:id' )
               }
 
               if( row ) {
-                  db.run( 'UPDATE questions SET inactive=TRUE WHERE qid=?', [ qid ] );
-                  console.log( '[ ARCHIVE ] [ questions ]' + qid ) ;
+                  db.run( 'UPDATE questions SET inactive=1 WHERE qid=?', [ qid ], function( err ) {
+                      console.log( '[ ARCHIVE ] [ questions ]' + qid ) ;
+
+                      if( err !== null ) {
+                          console.log( '[ ERROR ]', err );
+                          res.status( 404 ).send();
+                      }
+                  } );
               }
           } );
           db.close();
@@ -197,8 +222,14 @@ Router.route( '/vote/:id' )
               }
 
               if( row ) {
-                  db.run( 'INSERT INTO responses VALUES( ?, ?, ?)' [ qid, user, option ] );
-                  console.log( '[ UPDATE ] [ responses ] ' + qid, ',' + user + ',' + option );
+                  db.run( 'INSERT INTO responses VALUES( ?, ?, ?)' [ qid, user, option ], function( err ) {
+                      console.log( '[ UPDATE ] [ responses ] ' + qid, ',' + user + ',' + option );
+
+                      if( err !== null ) {
+                          console.log( '[ ERROR ]', err );
+                          res.status( 404 ).send();
+                      }
+                  } );
               }
           } );
           db.close();
