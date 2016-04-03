@@ -197,7 +197,8 @@ Router.route( '/vote/:id' )
               }
 
               if( row ) {
-                  db.run( 'UPDATE questions SET inactive=TRUE WHERE qid=?', [ qid ] );
+                  db.run( 'INSERT INTO responses VALUES( ?, ?, ?)' [ qid, user, option ] );
+                  console.log( '[ UPDATE ] [ responses ] ' + qid, ',' + user + ',' + option );
               }
           } );
           db.close();
