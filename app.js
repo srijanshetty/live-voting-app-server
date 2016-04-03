@@ -217,18 +217,20 @@ Router.route( '/vote/:id' )
 
           var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM questions WHERE qid=?', [ qid ], function( err, row ) {
+              console.log( '[ QUERY ] ', row );
+
               if( err ) {
                   console.log( '[ ERROR ]', err );
                   res.status( 404 ).send();
               }
 
-              // Only the creator should be allowed to upate
               if( row.inactive === 1 ) {
+                  console.log( '[ ERROR ] Question is archived ' );
                   res.status( 404 ).send();
               }
 
               if( row ) {
-                  db.run( 'INSERT INTO responses VALUES( ?, ?, ?)' [ qid, user, option ], function( err ) {
+                  db.run( 'INSERT INTO responses VALUES( ?, ?, ? )', [ qid, user, option ], function( err ) {
                       console.log( '[ UPDATE ] [ responses ] ' + qid, ',' + user + ',' + option );
 
                       if( err !== null ) {
@@ -237,6 +239,8 @@ Router.route( '/vote/:id' )
                       }
                   } );
               }
+
+              res.send();
           } );
           db.close();
       } );
