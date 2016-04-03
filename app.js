@@ -62,17 +62,17 @@ Router.route( '/questions' )
       } )
       .post( function( req, res ) {
           // Create a question, options with creator ACCESS-KEY
-          var key = shortid.generate();
+          var qid = shortid.generate();
           var creator = req.headers[ 'x-access-key' ];
           var question = req.body.question;
           var options = JSON.stringify( req.body.options );
 
           var db = new sqlite.Database( database );
-          db.run( 'INSERT INTO questions VALUES( ?, ?, ?, ? )', [ key, creator, question, options ], function( err ) {
-              console.log( '[ DB ] (' + key + ',' + creator + ',' + question + ',' + options + ')' );
+          db.run( 'INSERT INTO questions VALUES( ?, ?, ?, ? )', [ qid, creator, question, options ], function( err ) {
+              console.log( '[ DB ] (' + qid + ',' + creator + ',' + question + ',' + options + ')' );
 
               if( err === null ) {
-                  res.send( { "key": key } );
+                  res.send( { "key": qid } );
               } else {
                   res.status( 404 ).send();
               }
@@ -82,20 +82,24 @@ Router.route( '/questions' )
 
 Router.route( '/questions/:id' )
       .get( function( req, res ) {
-          var question = req.params.id;
+          var qid = req.params.id;
           var creator = req.headers[ 'x-access-key' ];
 
           var db = new sqlite.Database( database );
-          db.get( 'SELECT * FROM questions WHERE qid=?', [ question ], function( err, row ) {
+          db.get( 'SELECT * FROM questions WHERE qid=?', [ qid ], function( err, row ) {
+              if( err ) {
+                  res.status( 404 ).send();
+              }
+
               if( row ) {
-                  db.all( 'SELECT * FROM responses WHERE qid=?', [ question ], function( err, rows ) {
+                  db.all( 'SELECT * FROM responses WHERE qid=?', [ qid ], function( err, rows ) {
                       var results = {};
                       rows.forEach( function( row ) {
                           results[ row.option ] = ( results[ row.option ] )? ++results[ row.option ] : 1;
                       } );
 
                       console.log( '[ RESPONSE ]' + JSON.stringify( rows ) ) ;
-                      res.send( { "question": row.question, "options": JSON.parse( row.options ), "stats": results });
+                      res.send( { "qid": qid, "question": row.question, "options": JSON.parse( row.options ), "stats": results });
                   } );
               }
           } );
