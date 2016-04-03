@@ -123,11 +123,13 @@ Router.route( '/questions/:id' )
           var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM questions WHERE qid=?', [ qid ], function( err, row ) {
               if( err ) {
+                  console.log( '[ ERROR ]', err );
                   res.status( 404 ).send();
               }
 
               // Only the creator should be allowed to upate
               if( row.creator !== creator ) {
+                  console.log( '[ ERROR ] User is not allowed to update' );
                   res.status( 404 ).send();
               }
 
@@ -165,7 +167,6 @@ Router.route( '/questions/:id' )
                               }
                           } );
                       }
-                  });
               }
           } );
           db.close();
@@ -177,6 +178,7 @@ Router.route( '/questions/:id' )
           var db = new sqlite.Database( database );
           db.get( 'SELECT * FROM questions WHERE qid=?', [ qid ], function( err, row ) {
               if( err ) {
+                  console.log( '[ ERROR ]', err );
                   res.status( 404 ).send();
               }
 
