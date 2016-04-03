@@ -151,12 +151,12 @@ Router.route( '/questions/:id' )
 
 Router.route( '/vote/:id' )
       .post( function( req, res ) {
-          // Check if ACCESS-KEY is allowed to vote
+          // TODO: Check if ACCESS-KEY is allowed to vote
 
           // Check for duplicate votes using PRIMARY KEY
           // Add vote to id with POST param option
           var qid = req.body.qid;
-          var user = req.body.email;
+          var user = req.headers[ 'x-access-key' ];
           var option = req.body.option;
 
           var db = new sqlite.Database( database );
