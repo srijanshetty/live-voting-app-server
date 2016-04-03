@@ -147,6 +147,28 @@ Router.route( '/questions/:id' )
               }
           } );
           db.close();
+      } )
+      .delete( function( req, res ) {
+          var qid = req.params.id;
+          var creator = req.headers[ 'x-access-key' ];
+
+          var db = new sqlite.Database( database );
+          db.get( 'SELECT * FROM questions WHERE qid=?', [ qid ], function( err, row ) {
+              if( err ) {
+                  res.status( 404 ).send();
+              }
+
+              // Only the creator should be allowed to upate
+              if( row.creator !== creator ) {
+                  res.status( 404 ).send();
+              }
+
+              if( row ) {
+                  db.run( 'UPDATE questions SET inactive=TRUE WHERE qid=?', [ qid ] );
+              }
+          } );
+          db.close();
+
       } );
 
 Router.route( '/vote/:id' )
