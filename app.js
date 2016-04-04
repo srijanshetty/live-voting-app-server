@@ -105,7 +105,7 @@ Router.route( '/questions/:id' )
                           "question": row.question,
                           "options": JSON.parse( row.options ),
                           "stats": results,
-                          "next_quid": row.next_qid
+                          "next_qid": row.next_qid
                       });
                   } );
               }
@@ -116,7 +116,7 @@ Router.route( '/questions/:id' )
           var qid = req.params.id;
           var creator = req.headers[ 'x-access-key' ];
 
-          var next_quid = req.body.next_quid;
+          var next_qid = req.body.next_qid;
           var question = req.body.question;
           var options = req.body.options;
 
@@ -136,9 +136,9 @@ Router.route( '/questions/:id' )
               }
 
               if( row ) {
-                  if ( !!next_quid ) {
-                      db.run( 'UPDATE questions SET next_quid=? WHERE qid=?', [ next_quid, qid ], function( err ) {
-                          console.log( '[ UPDATE ] [ questions - next_quid ]' + next_quid ) ;
+                  if ( !!next_qid ) {
+                      db.run( 'UPDATE questions SET next_qid=? WHERE qid=?', [ next_qid, qid ], function( err ) {
+                          console.log( '[ UPDATE ] [ questions - next_qid ]' + next_qid ) ;
 
                           if( err !== null ) {
                               console.log( '[ ERROR ]', err );
