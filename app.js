@@ -169,7 +169,7 @@ Router.route( '/questions/:id' )
                       } );
                   }
 
-                  res.send();
+                  res.send( { } );
               }
           } );
           db.close();
@@ -240,7 +240,7 @@ Router.route( '/vote/:id' )
                   } );
               }
 
-              res.send();
+              res.send( { } );
           } );
           db.close();
       } );
